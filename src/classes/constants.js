@@ -1,0 +1,3 @@
+export const MOVE_TO_FLOOR = "MOVE_TO_FLOOR";
+export const FLOOR_CALL_PRESS = "FLOOR_CALL_PRESS";
+

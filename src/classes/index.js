@@ -1,5 +1,6 @@
-import { actionMoveToFloor, moveToFloor } from "../services/board.service";
-
+import { moveToFloorAction } from "../store/actions/callsQueueActions";
+import store from "../store/store";
+import { MOVE_TO_FLOOR, FLOOR_CALL_PRESS } from "./constants";
 
 export class CellItem {
     constructor({ elevatorID = null, row, col }) {
@@ -27,17 +28,13 @@ export class Elevator {
 }
 
 export class CallsQueue {
-    constructor(board, setBoard, setElevators) {
-        this.board = board;
-        this.setBoard = setBoard;
-        this.setElevators = setElevators;
+    constructor() {
         this.calls = [];
         this.delay = 1000;
-        setInterval(this.doTasks.bind(this), this.delay);
+        setInterval(this.runQueue.bind(this), this.delay);
     }
 
     enqueue = (element) => {
-        console.log({ element, this: this })
         this.calls.push(element);
     }
 
@@ -45,19 +42,32 @@ export class CallsQueue {
         this.calls.shift();
     }
 
-    doTasks = () => {
+    runQueue = () => {
         if (this.calls.length === 0 || !this.calls[0]) return;
-        console.log(this.calls[0]);
         const { from, to, action, elevator } = this.calls[0];
         switch (action) {
-            case "MOVE_TO_FLOOR":
-                moveToFloor({ board: this.board, setBoard: this.setBoard, from, to, elevator, setElevators: this.setElevators });
+            case MOVE_TO_FLOOR:
+                store.dispatch(moveToFloorAction({ from, to, elevator }));
                 break;
-            case "FLOOR_CALL_PRESS":
-                actionMoveToFloor({ callsQueue: this, from, to, elevator });
+            case FLOOR_CALL_PRESS:
+                this.decomposeMoves({ from, to, elevator, action: MOVE_TO_FLOOR });
             default:
                 break;
         }
         this.dequeue();
+    }
+
+    decomposeMoves = ({ action, from, to, elevator }) => {
+        const task = { action, elevator }
+        if (to > from) {
+            for (let i = from; i < to; i++) {
+                this.enqueue({ ...task, from: i, to: i + 1 });
+            }
+        }
+        if (to < from) {
+            for (let i = from; i > to; i--) {
+                this.enqueue({ ...task, from: i, to: i - 1 });
+            }
+        }
     }
 }

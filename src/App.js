@@ -1,30 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Cell from './components/Cell/Cell';
-import {
-  createBoard,
-  createElevators,
-  createFloors,
-  createCallsQueue,
-  onFloorCallPress,
-} from './services/board.service';
-import { cloneDeep } from "lodash";
+import { onFloorCallPress } from './services/board.service';
+import { setBoardAction } from "./store/actions/boardActions";
+import { setCallsQueueAction } from "./store/actions/callsQueueActions";
+import { setElevatorsAction } from "./store/actions/elevatorsActions";
+import { setFloorsAction } from "./store/actions/floorsActions";
+import { isEmpty } from "lodash";
 import './App.css';
 
 const rows = 10;
 const cols = 5;
 
 function App() {
-  const [board, setBoard] = useState(createBoard(rows, cols));
-  const [elevators, setElevators] = useState(createElevators(cols));
-  const [floors, setFloors] = useState(createFloors(rows));
-  const [callsQueue, setCallsQueue] = useState(null);
+  const { board } = useSelector(state => state.board);
+  const { elevators } = useSelector(state => state.elevators);
+  const { floors } = useSelector(state => state.floors);
+  const { callsQueue } = useSelector(state => state.callsQueue);
+  const dispatch = useDispatch();
 
+
+  const didMount = () => {
+    dispatch(setBoardAction(rows, cols));
+    dispatch(setElevatorsAction(cols));
+    dispatch(setFloorsAction(rows));
+  }
+
+  const didUpdate = () => {
+    if (board && isEmpty(callsQueue)) dispatch(setCallsQueueAction(board));
+  }
 
   useEffect(() => {
-    if (board) setCallsQueue(createCallsQueue(board, setBoard, setElevators));
+    didMount();
   }, []);
 
-  const getElevatorByID = id => elevators[id];
+  useEffect(() => {
+    didUpdate();
+  }, [board]);
 
   const renderFloorsBtns = () => (
     <div>
@@ -47,10 +59,12 @@ function App() {
     </div>
   );
 
+  const getElevatorByID = id => elevators[id];
+
   const renderBoard = () => (
     <table className="board">
       <tbody>
-        {board.cells.map((row, i) => {
+        {board.map((row, i) => {
           return (
             <tr className="board-row" key={i}>
               {row.map((cell, j) => <td className="cell-container" key={j}>

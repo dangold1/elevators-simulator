@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import "./Elevator.css";
 const Elevator = () => {
-  const renderElevator = () => {
-    return (
+  return (
+    <div className="elevator">
       <img
-        src={`${process.env.PUBLIC_URL}/assets/call-elevator.svg`}
+        src={`${process.env.PUBLIC_URL}/assets/standby-elevator.svg`}
         width="50px"
         height="50px"
       />
-    );
-  };
-
-  return <div className="elevator">{renderElevator()}</div>;
+    </div>
+  );
 };
 
 export default Elevator;
