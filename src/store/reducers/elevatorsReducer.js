@@ -9,19 +9,17 @@ import { cloneDeep } from "lodash";
 
 const initialState = { elevators: [] }
 export const elevatorsReducer = (state = initialState, action) => {
-    const { type, cols, to, elevator } = action;
+    const { type, cols, to, elevator, status } = action;
     switch (type) {
         case SET_ELEVATORS: {
             const elevators = createElevators(cols);
-            return {
-                ...state,
-                elevators
-            };
+            return { ...state, elevators };
         }
         case MOVE_TO_FLOOR: {
             const elevators = updateElevator({
                 to,
                 elevator,
+                status,
                 elevators: cloneDeep(state.elevators)
             });
             return { ...state, elevators };

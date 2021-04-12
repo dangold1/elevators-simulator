@@ -7,6 +7,7 @@ import { setCallsQueueAction } from "./store/actions/callsQueueActions";
 import { setElevatorsAction } from "./store/actions/elevatorsActions";
 import { setFloorsAction } from "./store/actions/floorsActions";
 import { isEmpty } from "lodash";
+import clsx from 'clsx';
 import './App.css';
 
 const rows = 10;
@@ -39,27 +40,24 @@ function App() {
   }, [board]);
 
   const renderFloorsBtns = () => (
-    <div>
-      {floors.map(floor => {
-        return (
-          <div>
-            <button onClick={() => onFloorCallPress({ callsQueue, to: floor.ID, elevators })}>
-              {floor.status}
-            </button>
-            <span>{floor.ID}</span>
-          </div>
-        )
-      })}
+    <div className="floors-btns-col">
+      {floors.map(floor => (
+        <button
+          key={floor.ID}
+          className={clsx("floor-btn", floor.status)}
+          onClick={() => onFloorCallPress({ callsQueue, to: floor.ID, elevators })}
+        >
+          {floor.status}
+        </button>
+      ))}
     </div>
   );
 
   const renderFloorsNumbers = () => (
     <div>
-      {floors.map(floor => <div>{floor.ID}</div>)}
+      {floors.map(floor => <div>{floor.ID === 0 ? "Grounded Floor" : floor.ID}</div>)}
     </div>
   );
-
-  const getElevatorByID = id => elevators[id];
 
   const renderBoard = () => (
     <table className="board">
@@ -68,7 +66,7 @@ function App() {
           return (
             <tr className="board-row" key={i}>
               {row.map((cell, j) => <td className="cell-container" key={j}>
-                <Cell data={cell} getElevatorByID={getElevatorByID} />
+                <Cell data={cell} />
               </td>)}
             </tr>
           )

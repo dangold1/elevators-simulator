@@ -24,7 +24,7 @@ export const createElevators = (cols) => {
 export const createFloors = (rows) => {
     const floors = [];
     for (let row = 0; row < rows; row++) {
-        floors[row] = new Floor(row);
+        floors[row] = new Floor({ ID: row });
     }
     return floors;
 }

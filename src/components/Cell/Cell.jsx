@@ -8,7 +8,7 @@ const Cell = ({ data }) => {
   return (
     <div className="cell">
       {elevatorID === null && `[${row},${col}]`}
-      {typeof elevatorID === "number" && <Elevator />}
+      {typeof elevatorID === "number" && <Elevator elevatorID={elevatorID} />}
     </div>
   );
 };

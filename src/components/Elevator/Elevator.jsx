@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import "./Elevator.css";
-const Elevator = () => {
+
+const Elevator = ({ elevatorID }) => {
+  const { elevators } = useSelector((state) => state.elevators);
+  const src = `${process.env.PUBLIC_URL}/assets/${elevators[elevatorID].status}-elevator.svg`;
   return (
     <div className="elevator">
-      <img
-        src={`${process.env.PUBLIC_URL}/assets/standby-elevator.svg`}
-        width="50px"
-        height="50px"
-      />
+      <img src={src} width="40px" height="40px" />
     </div>
   );
 };
